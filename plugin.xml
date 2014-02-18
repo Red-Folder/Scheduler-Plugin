@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="com.red_folder.phonegap.plugin.scheduler"
+        version="0.0.1">
+
+    <name>Scheduler Plugin</name>
+
+    <description>
+        Plugin which allows you to schedule an alarm which will start you app.
+    </description>
+
+    <license>Apache 2.0</license>
+
+    <engines>
+        <engine name="cordova" version=">=3.0.0"/>
+    </engines>
+
+    <!-- android -->
+    <platform name="android">
+
+		<asset src="www/scheduler.html" target="scheduler.html" />
+
+		<js-module src="www/scheduler.js" name="scheduler">
+			<clobbers target="cordova.plugins.scheduler" />
+		</js-module>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:name="com.red_folder.phonegap.plugin.availabilitymonitor.service.MonitorService">
+				<receiver android:name="com.red_folder.phonegap.plugin.scheduler.AlarmBroadcastReceiver">
+				</receiver>
+			</service>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+			<uses-permission android:name='android.permission.WAKE_LOCK'/>
+        </config-file>
+        
+        <source-file src="src/android/" target-dir="src/" />
+    </platform>
+	
+</plugin>
