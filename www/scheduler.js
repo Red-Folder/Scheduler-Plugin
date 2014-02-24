@@ -24,12 +24,12 @@
 		var Scheduler = function () {
 		};
 			
-		Scheduler.prototype.setAlarm = function(when, successCallback, failureCallback) {
+		Scheduler.prototype.addAlarm = function(what, when, successCallback, failureCallback) {
 			return exec(	successCallback,
 							failureCallback,      
 							'SchedulerPlugin', 
-							'setAlarm',      
-							[when]);
+							'addAlarm',      
+							[what, when]);
 		};
 		
 		var scheduler = new Scheduler();

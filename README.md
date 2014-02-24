@@ -22,6 +22,8 @@ This is a very early version of the plugin and is under active development.
 
 Please see the [Enhancements List] (https://github.com/Red-Folder/Scheduler-Plugin/issues?labels=enhancement&page=1&state=open) for the planned changes. 
 
+Please read the [Release Notes] (https://github.com/Red-Folder/Scheduler-Plugin/wiki/Release-Notes) between version as function signature is very likely to change while in active development.
+
 ## Questions and Support
 If you have problems, then please log an issue: https://github.com/Red-Folder/Scheduler-Plugin/issues?state=open
 

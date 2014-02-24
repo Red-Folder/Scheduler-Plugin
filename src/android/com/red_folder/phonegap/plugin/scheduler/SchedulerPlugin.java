@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.red_folder.phonegap.helpers.Log;
+import com.red_folder.phonegap.plugin.scheduler.dal.SchedulerDAL;
+import com.red_folder.phonegap.plugin.scheduler.models.Alarm;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -33,7 +35,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 	 * Keys 
 	 ************************************************************************************************
 	 */
-	public static final String ACTION_SET_ALARM = "setAlarm";
+	public static final String ACTION_ADD_ALARM = "addAlarm";
 	public static final String ACTION_CANCEL_ALARM = "cancelAlarm";
 
 	/*
@@ -57,7 +59,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 
 			Log.d(TAG, "Action: " + action);
 
-			if (ACTION_SET_ALARM.equals(action) ||
+			if (ACTION_ADD_ALARM.equals(action) ||
 				ACTION_CANCEL_ALARM.equals(action)) { 
 			
 				Log.d(TAG, "Setting up the runnable thread");
@@ -67,19 +69,25 @@ public class SchedulerPlugin  extends CordovaPlugin {
 					@Override
 					public void run() {
 						PluginResult pluginResult = null;
-						if (ACTION_SET_ALARM.equals(action)) {
+						if (ACTION_ADD_ALARM.equals(action)) {
 							try {
-								Log.d(TAG, "Received -> " + data.getString(0));
-								String whenTxt = data.getString(0);
-								
-								Log.d(TAG, "Attempting to parse");
-								//DateFormat m_ISO8601Local = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ssZ");
-								//Date when = m_ISO8601Local.parse(whenTxt);
-								DateFormat m_ISO8601Compliant = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-								Date when = m_ISO8601Compliant.parse(whenTxt);
-								
-								Log.d(TAG, "Run set alarm");
-								pluginResult = setAlarm(context, when);
+								if (data.length() == 2) {
+									Log.d(TAG, "Received, what = " + data.getString(0) + ", when = " + data.getString(1));
+
+									String what = data.getString(0);
+									String whenTxt = data.getString(1);
+
+									Log.d(TAG, "Attempting to parse");
+									//DateFormat m_ISO8601Local = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ssZ");
+									//Date when = m_ISO8601Local.parse(whenTxt);
+									DateFormat m_ISO8601Compliant = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+									Date when = m_ISO8601Compliant.parse(whenTxt);
+
+									Log.d(TAG, "Run set alarm");
+									pluginResult = addAlarm(context, what, when);
+								} else {
+									pluginResult = new PluginResult(Status.ERROR, "Expected 2 paramaters (what & when), only received " + data.length());
+								}
 								
 							} catch (JSONException ex) {
 								Log.d(TAG, "Error occurred when trying to get date", ex);
@@ -119,18 +127,34 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		return result;
 	}
 	
-	private PluginResult setAlarm(Context context, Date when){
+	private PluginResult addAlarm(Context context, String what, Date when){
 		PluginResult result = null;
+
+		// Create an alarm record
+		Alarm alarm = new Alarm();
+		alarm.setClassName(what);
+		alarm.setWhen(when);
+
+		// Now save the alarm
+		SchedulerDAL dal = new SchedulerDAL(context);
+		int id = dal.add(alarm);
+		if (id > 0) {
+			dal.save();
 		
-		AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+			AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         
-		Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-		//intent.putExtra(ONE_TIME, Boolean.TRUE);
+			Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+			intent.putExtra("id", alarm.getId());
 		
-        PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, 0);
-		am.set(AlarmManager.RTC_WAKEUP, when.getTime(), pi);
+			PendingIntent pi = PendingIntent.getBroadcast(context, alarm.getId(), intent, 0);
+			
+			am.set(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
 		
-		result = new PluginResult(Status.OK);
+			result = new PluginResult(Status.OK);
+		} else {
+			result = new PluginResult(Status.ERROR, "Unable to save Alarm details");
+		}
+		
 		return result;
     }
 	

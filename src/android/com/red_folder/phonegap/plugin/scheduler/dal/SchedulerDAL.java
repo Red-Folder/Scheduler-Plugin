@@ -33,7 +33,8 @@ public class SchedulerDAL {
 		String storedData = PreferencesHelper.get(this.mContext, DATA_KEY);
 		JSONArray json = null;
 		
-		try { json = new JSONArray(storedData);	} catch (JSONException ex) { Log.d(TAG, "Unable to convert storedData to JSONArray", ex); }
+		if (storedData.length() > 0) 
+			try { json = new JSONArray(storedData);	} catch (JSONException ex) { Log.d(TAG, "Unable to convert storedData to JSONArray", ex); }
 		
 		this.mDictionary = AlarmDictionary.fromJSON(json);
 	}
@@ -72,7 +73,7 @@ public class SchedulerDAL {
 		if (alarm != null) {
 			if (alarm.getId() > 0) {
 				if (this.mDictionary.containsKey(alarm.getId())) {
-					this.mDictionary.remove(alarm).getId();
+					this.mDictionary.remove(alarm.getId());
 					
 					result = true;
 				}

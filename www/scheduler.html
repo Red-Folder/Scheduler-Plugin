@@ -73,7 +73,8 @@
    				now = new Date();
    				when = new Date(now.getTime() + (30 * 1000));
    			
-   				scheduler.setAlarm(	when,
+   				scheduler.addAlarm(	'com.example.hello.HelloWorld',
+   									when,
    									function(data) { updateView(data) }, 
    									function(data) { displayError(data) });
    									
