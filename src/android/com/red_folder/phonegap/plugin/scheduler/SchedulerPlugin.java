@@ -149,6 +149,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 			PendingIntent pi = PendingIntent.getBroadcast(context, alarm.getId(), intent, 0);
 			
 			am.set(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
+			//am.setExact(AlarmManager.RTC_WAKEUP, when.getTime(), pi); //to be used mandatory from Android 19
 		
 			result = new PluginResult(Status.OK);
 		} else {
