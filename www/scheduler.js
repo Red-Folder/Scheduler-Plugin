@@ -20,16 +20,90 @@
 
 	SchedulerFactory.prototype.create = function () {
 		var exec = cordova.require("cordova/exec");
+		
 			
 		var Scheduler = function () {
-		};
-			
-		Scheduler.prototype.addAlarm = function(what, when, successCallback, failureCallback) {
-			return exec(	successCallback,
+		   var _self = this;
+		   
+		   this.addAlarm = function(what, when, successCallback, failureCallback) {
+			  return exec(	successCallback,
 							failureCallback,      
 							'SchedulerPlugin', 
 							'addAlarm',      
-							[what, when]);
+							[what, _self.convertToUTC(when)]);
+		   };
+		   
+		   this.updateAlarm = function(id, what, when, successCallback, failureCallback) {
+			  return exec(	successCallback,
+							failureCallback,      
+							'SchedulerPlugin', 
+							'updateAlarm',      
+							[id, what, _self.convertToUTC(when)]);
+		   };
+		   
+		   this.cancelAlarm = function(id, successCallback, failureCallback) {
+			  return exec(	successCallback,
+							failureCallback,      
+							'SchedulerPlugin', 
+							'cancelAlarm',      
+							[id]);
+		   };
+		   
+		   this.getAlarms = function(successCallback, failureCallback) {
+			  return exec(	function(data) {
+			  					var alarms = new Array();
+			                    for (var x in data) {
+			                       alarms[x] = _self.convertToJSON(data[x]);
+			                    };
+			                    
+			  					successCallback(alarms);
+			  				},
+							failureCallback,      
+							'SchedulerPlugin', 
+							'getAlarms',      
+							[]);
+		   };
+
+		   this.getAlarm = function(id, successCallback, failureCallback) {
+			  return exec(	function(data) {	
+			  					successCallback(_self.convertToJSON(data));
+			  				},
+							failureCallback,      
+							'SchedulerPlugin', 
+							'getAlarm',      
+							[id]);
+		   };
+		   
+		   this.getDefaultClass = function(successCallback, failureCallback) {
+			  return exec(	successCallback,
+							failureCallback,      
+							'SchedulerPlugin', 
+							'getDefaultClass',      
+							[]);
+		   };
+		
+		   this.convertToUTC = function(originalDate) {
+			  return new Date(originalDate.getTime() - _self.getUTCDelta());
+		   }; 
+
+		   this.convertFromUTC = function(originalDate) {
+			  return new Date(originalDate.getTime() + _self.getUTCDelta());
+		   }; 
+		
+		   this.getUTCDelta = function() {
+		      var now = new Date();
+			  return (now.getTimezoneOffset()*60*1000);
+		   };
+		
+		   this.convertToJSON = function(fromPlugin) {
+		      var alarm = {};
+		      
+		      alarm.id = fromPlugin.id;
+		      alarm.classname = fromPlugin.classname;
+		      alarm.when = _self.convertFromUTC(new Date(fromPlugin.when));
+		      
+		      return alarm;
+		   };
 		};
 		
 		var scheduler = new Scheduler();
@@ -37,7 +111,7 @@
 		
 	};
    
-   	module.exports = new SchedulerFactory().create();; 
+   	module.exports = new SchedulerFactory().create();
 
 
 

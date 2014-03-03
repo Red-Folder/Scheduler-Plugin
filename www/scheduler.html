@@ -23,37 +23,192 @@
         <title>Scheduler</title>
     </head>
     <body>
-		<table>
-			<tr>
-				<th colspan=3 align="center">When</th>
-			</tr>
-			<tr>
-				<th align="left">Day</th>
-				<td colspan=2 align="center"><input id="dayTxt" type="Text"/></td>
-			</tr>
-			<tr>
-				<th align="left">Month</th>
-				<td colspan=2 align="center"><input id="monthTxt" type="Text"/></td>
-			</tr>
-			<tr>
-				<th align="left">Year</th>
-				<td colspan=2 align="center"><input id="yearTxt" type="Text"/></td>
-			</tr>
+    	<div id="alarmList"></div>
+    	
+    	<div id="editAlarm" style="display:none;" >
+			<table>
+				<tr>
+					<th colspan=1 align="center">ID</th>
+					<td clospan=2 align="center">
+						<input id="idTxt" type="text" readonly="readonly"/>
+					</td>
+				</tr>
 
-			<tr>
-				<th align="left">Hour</th>
-				<td colspan=2 align="center"><input id="hourTxt" type="Text"/></td>
-			</tr>
-			<tr>
-				<th align="left">Minute</th>
-				<td colspan=2 align="center"><input id="minuteTxt" type="Text"/></td>
-			</tr>
+				<tr>
+					<th colspan=1 align="center">Classname</th>
+					<td clospan=2 align="center">
+						<input id="classnameTxt" type="text"/>
+					</td>
+				</tr>
 
-			<tr>
-				<td colspan=3 align="center"><input disabled id="updateBtn" type="button" value="Update"/></td>
-			</tr>
+				<tr>
+					<th colspan=1 align="center">Date</th>
+					<td clospan=2 align="center">
+						<select id="dayTxt">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+							<option value="11">11</option>
+							<option value="12">12</option>
+							<option value="13">13</option>
+							<option value="14">14</option>
+							<option value="15">15</option>
+							<option value="16">16</option>
+							<option value="17">17</option>
+							<option value="18">18</option>
+							<option value="19">19</option>
+							<option value="20">20</option>
+							<option value="21">21</option>
+							<option value="22">22</option>
+							<option value="23">23</option>
+							<option value="24">24</option>
+							<option value="25">25</option>
+							<option value="26">26</option>
+							<option value="27">27</option>
+							<option value="28">28</option>
+							<option value="29">29</option>
+							<option value="30">30</option>
+							<option value="31">31</option>
+						</select>
+						<select id="monthTxt">
+							<option value="1">Jan</option>
+							<option value="2">Feb</option>
+							<option value="3">Mar</option>
+							<option value="4">Apr</option>
+							<option value="5">May</option>
+							<option value="6">Jun</option>
+							<option value="7">Jul</option>
+							<option value="8">Aug</option>
+							<option value="9">Sep</option>
+							<option value="10">Oct</option>
+							<option value="11">Nov</option>
+							<option value="12">Dec</option>
+						</select>
+						<select id="yearTxt">
+							<option value="2014">2014</option>
+							<option value="2015">2015</option>
+							<option value="2016">2016</option>
+							<option value="2017">2017</option>
+							<option value="2018">2018</option>
+						</select>
+					</td>
+				</tr>
+	
+				<tr>
+					<th colspan=1 align="center">Time</th>
+					<td clospan=2 align="center">
+						<select id="hourTxt">
+							<option value="0">00</option>
+							<option value="1">01</option>
+							<option value="2">02</option>
+							<option value="3">03</option>
+							<option value="4">04</option>
+							<option value="5">05</option>
+							<option value="6">06</option>
+							<option value="7">07</option>
+							<option value="8">08</option>
+							<option value="9">09</option>
+							<option value="10">10</option>
+							<option value="11">11</option>
+							<option value="12">12</option>
+							<option value="13">13</option>
+							<option value="14">14</option>
+							<option value="15">15</option>
+							<option value="16">16</option>
+							<option value="17">17</option>
+							<option value="18">18</option>
+							<option value="19">19</option>
+							<option value="20">20</option>
+							<option value="21">21</option>
+							<option value="22">22</option>
+							<option value="23">23</option>
+						</select>
+						:
+						<select id="minuteTxt">
+							<option value="0">00</option>
+							<option value="1">01</option>
+							<option value="2">02</option>
+							<option value="3">03</option>
+							<option value="4">04</option>
+							<option value="5">05</option>
+							<option value="6">06</option>
+							<option value="7">07</option>
+							<option value="8">08</option>
+							<option value="9">09</option>
+							<option value="10">10</option>
+							<option value="11">11</option>
+							<option value="12">12</option>
+							<option value="13">13</option>
+							<option value="14">14</option>
+							<option value="15">15</option>
+							<option value="16">16</option>
+							<option value="17">17</option>
+							<option value="18">18</option>
+							<option value="19">19</option>
+							<option value="20">20</option>
+							<option value="21">21</option>
+							<option value="22">22</option>
+							<option value="23">23</option>
+							<option value="24">24</option>
+							<option value="25">25</option>
+							<option value="26">26</option>
+							<option value="27">27</option>
+							<option value="28">28</option>
+							<option value="29">29</option>
+							<option value="30">30</option>
+							<option value="31">31</option>
+							<option value="32">32</option>
+							<option value="33">33</option>
+							<option value="34">34</option>
+							<option value="35">35</option>
+							<option value="36">36</option>
+							<option value="37">37</option>
+							<option value="38">38</option>
+							<option value="39">39</option>
+							<option value="40">40</option>
+							<option value="41">41</option>
+							<option value="42">42</option>
+							<option value="43">43</option>
+							<option value="44">44</option>
+							<option value="45">45</option>
+							<option value="46">46</option>
+							<option value="47">47</option>
+							<option value="48">48</option>
+							<option value="49">49</option>
+							<option value="50">50</option>
+							<option value="51">51</option>
+							<option value="52">52</option>
+							<option value="53">53</option>
+							<option value="54">54</option>
+							<option value="55">55</option>
+							<option value="56">56</option>
+							<option value="57">57</option>
+							<option value="58">58</option>
+							<option value="59">59</option>
+						</select>
+					</td>
+				</tr>
+	
+				<tr>
+					<td id="validationError" colspan=3 align="center"></td>
+				</tr>
+	
+			</table>
+		</div>
 
-		</table>
+    	<div id="commands">
+    		<input id="addBtn" type="button" value="Add" style="display:inline;"/>
+    		<input id="updateBtn" type="button" value="Update" style="display:none;"/>
+    		<input id="cancelEditBtn" type="button" value="Cancel" style="display:none;"/>
+    	</div>
+    	
         
         <script type="text/javascript" src="cordova.js"></script>
         
@@ -66,19 +221,74 @@
    				
       			scheduler = cordova.plugins.scheduler;
 
-				updateView();
+				scheduler.getAlarms(function(data) { updateAlarmList(data) },
+									function(data) { displayError(data) }); 
+
+				document.getElementById("addBtn").onclick = add;
+				document.getElementById("updateBtn").onclick = update;
+				document.getElementById("cancelEditBtn").onclick = closeEdit;
+
    			}, true);
    			  
    			function update() {
-   				now = new Date();
-   				when = new Date(now.getTime() + (30 * 1000));
+   			    document.getElementById("validationError").innerHTML = "";
+   			    
+   			    try {
+   				   id = document.getElementById("idTxt").value;
+   				   classname = document.getElementById("classnameTxt").value;
+
+   				   when = new Date(	document.getElementById("yearTxt").value,
+   					   				document.getElementById("monthTxt").value - 1,
+   									document.getElementById("dayTxt").value,
+   									document.getElementById("hourTxt").value,
+   									document.getElementById("minuteTxt").value,
+   									0,
+   									0);
+
+					if (id.length > 0) {
+   					   scheduler.updateAlarm(	id,
+   					   							classname,
+   										    	when,
+   										    	function(data) {
+   											    	scheduler.getAlarms(	function(data) { updateAlarmList(data) },
+																		    function(data) { displayError(data) }); 
+										    	}, 
+   										    	function(data) { displayError(data) });
+					} else {
+   					   scheduler.addAlarm(	classname,
+   										    when,
+   										    function(data) {
+   											    scheduler.getAlarms(	function(data) { updateAlarmList(data) },
+																	    function(data) { displayError(data) }); 
+										    }, 
+   										    function(data) { displayError(data) });
+					}
+					
+					closeEdit(); 					
+   			    } catch (err) {
+   			       document.getElementById("validationError").innerHTML = "Invalid date";
+   			    }				
+   			    
+   			}
+
+   			function add() {
+				scheduler.getDefaultClass(	function(data) { showEdit(null, data, new Date()) },
+											function(data) { displayError(data) }); 
+   			}
    			
-   				scheduler.addAlarm(	'com.example.hello.HelloWorld',
-   									when,
-   									function(data) { updateView(data) }, 
-   									function(data) { displayError(data) });
-   									
-   				alert("Alarm set");
+   			function edit(id) {
+				scheduler.getAlarm( id,
+									function(data) { showEdit(data.id, data.classname, data.when) },
+									function(data) { displayError(data) }); 
+   			}
+
+   			function cancel(id) {
+				scheduler.cancelAlarm( id,
+									function(data) {
+										scheduler.getAlarms(	function(data) { updateAlarmList(data) },
+																function(data) { displayError(data) }); 
+									},
+									function(data) { displayError(data) }); 
    			}
    			
    			function displayResult(data) {
@@ -92,13 +302,64 @@
    			/*
 			 * View logic
 			 */
- 			/*function updateView(data) {*/
- 			function updateView() {
-				var updateBtn = document.getElementById("updateBtn");
+ 			function showEdit(alarmID, alarmClassName, alarmDate) {
+ 			
+ 				document.getElementById("editAlarm").style.display = "block";
+ 				document.getElementById("addBtn").style.display = "none";
+ 				document.getElementById("updateBtn").style.display = "inline";
+ 				document.getElementById("cancelEditBtn").style.display = "inline";
 				
-				updateBtn.onclick = update;
-				updateBtn.disabled = false;
+				document.getElementById("idTxt").value = alarmID;
+				document.getElementById("classnameTxt").value = alarmClassName;
+				
+				document.getElementById("dayTxt").value = alarmDate.getDate();
+				document.getElementById("monthTxt").value = alarmDate.getMonth() +1;
+				document.getElementById("yearTxt").value = alarmDate.getFullYear();
+
+				document.getElementById("hourTxt").value = alarmDate.getHours();
+				document.getElementById("minuteTxt").value = alarmDate.getMinutes();
+				
    			}
+
+   			function closeEdit() {
+ 				document.getElementById("editAlarm").style.display = "none";
+ 				document.getElementById("addBtn").style.display = "inline";
+ 				document.getElementById("updateBtn").style.display = "none";
+ 				document.getElementById("cancelEditBtn").style.display = "none";
+   			}
+   			
+   			function updateAlarmList(data) {
+				var list = document.getElementById("alarmList");
+				var alarmHTML = "";
+
+				if (data == null || data.length == 0) {
+				   alarmHTML += "No alarms found<br/>";
+				} else {
+				   alarmHTML += "<table>" +
+				                   "<tr>" +
+				                      "<th>ID</th>" +
+				                      "<th>Date</th>" +
+				                      "<th>Time</th>" +
+				                      "<th></th>" +
+				                      "<th></th>" +
+				                   "</tr>";
+				                   
+				   
+				   for (var x in data) {
+				      alarmHTML += "<tr>" +
+				                      "<td>" + data[x].id + "</td>" +
+				                      "<td>" + data[x].when.toDateString() + "</td>" +
+				                      "<td>" + data[x].when.toTimeString().substring(0, 5) + "</td>" +
+				                      "<td>" + "<input type=button onclick='edit(" + data[x].id + ")' value='Edit'/>" + "</td>" +
+				                      "<td>" + "<input type=button onclick='cancel(" + data[x].id + ")' value='Cancel'/>" + "</td>" +
+				                   "</tr>";
+				   };
+
+				   alarmHTML += "</table>";
+				};
+				
+				list.innerHTML = alarmHTML;
+   			} 
    			
    		</script>
     </body>
