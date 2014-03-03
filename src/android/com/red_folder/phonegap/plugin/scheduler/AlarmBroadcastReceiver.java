@@ -46,12 +46,14 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 				Log.d(TAG, "Asked to Start app - " + alarm.getClassName());
 
 				if (alarm.getClassName() != null) {
-					if (AppHelper.isServiceRunning(context, alarm.getClassName())) {
-						Log.d(TAG, alarm.getClassName() + " already running");
-					} else {
+					//commented out to ensure it's brought to foreground even if active in background
+					// note: it then requires in Android-manifest: android:launchMode="singleTask" or android:launchMode="singleIstance"
+					//if (AppHelper.isServiceRunning(context, alarm.getClassName())) {
+					//	Log.d(TAG, alarm.getClassName() + " already running");
+					//} else {
 						Log.d(TAG, alarm.getClassName() + " starting");
 						AppHelper.startActivity(context, alarm.getClassName());
-					}
+					//}
 				}
 				
 				//Release the lock
