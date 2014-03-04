@@ -199,6 +199,13 @@
 				<tr>
 					<td id="validationError" colspan=3 align="center"></td>
 				</tr>
+
+				<tr>
+					<th colspan=1 align="center">Wake Screen</th>
+					<td clospan=2 align="center">
+						<input id="wakeScreenChk" type="checkbox"/>
+					</td>
+				</tr>
 	
 			</table>
 		</div>
@@ -244,11 +251,14 @@
    									document.getElementById("minuteTxt").value,
    									0,
    									0);
+   									
+                   wakeScreen = document.getElementById("wakeScreenChk").checked;   									
 
 					if (id.length > 0) {
    					   scheduler.updateAlarm(	id,
    					   							classname,
    										    	when,
+   										    	wakeScreen,
    										    	function(data) {
    											    	scheduler.getAlarms(	function(data) { updateAlarmList(data) },
 																		    function(data) { displayError(data) }); 
@@ -257,6 +267,7 @@
 					} else {
    					   scheduler.addAlarm(	classname,
    										    when,
+   										    wakeScreen,
    										    function(data) {
    											    scheduler.getAlarms(	function(data) { updateAlarmList(data) },
 																	    function(data) { displayError(data) }); 
@@ -272,13 +283,13 @@
    			}
 
    			function add() {
-				scheduler.getDefaultClass(	function(data) { showEdit(null, data, new Date()) },
+				scheduler.getDefaultClass(	function(data) { showEdit(null, data, new Date(), true) },
 											function(data) { displayError(data) }); 
    			}
    			
    			function edit(id) {
 				scheduler.getAlarm( id,
-									function(data) { showEdit(data.id, data.classname, data.when) },
+									function(data) { showEdit(data.id, data.classname, data.when, data.wakescreen) },
 									function(data) { displayError(data) }); 
    			}
 
@@ -302,7 +313,7 @@
    			/*
 			 * View logic
 			 */
- 			function showEdit(alarmID, alarmClassName, alarmDate) {
+ 			function showEdit(alarmID, alarmClassName, alarmDate, alarmWakeScreen) {
  			
  				document.getElementById("editAlarm").style.display = "block";
  				document.getElementById("addBtn").style.display = "none";
@@ -319,6 +330,7 @@
 				document.getElementById("hourTxt").value = alarmDate.getHours();
 				document.getElementById("minuteTxt").value = alarmDate.getMinutes();
 				
+				document.getElementById("wakeScreenChk").checked = alarmWakeScreen;
    			}
 
    			function closeEdit() {

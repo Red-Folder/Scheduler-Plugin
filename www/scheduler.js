@@ -25,20 +25,20 @@
 		var Scheduler = function () {
 		   var _self = this;
 		   
-		   this.addAlarm = function(what, when, successCallback, failureCallback) {
+		   this.addAlarm = function(what, when, wakeScreen, successCallback, failureCallback) {
 			  return exec(	successCallback,
 							failureCallback,      
 							'SchedulerPlugin', 
 							'addAlarm',      
-							[what, _self.convertToUTC(when)]);
+							[what, _self.convertToUTC(when), wakeScreen]);
 		   };
 		   
-		   this.updateAlarm = function(id, what, when, successCallback, failureCallback) {
+		   this.updateAlarm = function(id, what, when, wakeScreen, successCallback, failureCallback) {
 			  return exec(	successCallback,
 							failureCallback,      
 							'SchedulerPlugin', 
 							'updateAlarm',      
-							[id, what, _self.convertToUTC(when)]);
+							[id, what, _self.convertToUTC(when), wakeScreen]);
 		   };
 		   
 		   this.cancelAlarm = function(id, successCallback, failureCallback) {
@@ -101,6 +101,7 @@
 		      alarm.id = fromPlugin.id;
 		      alarm.classname = fromPlugin.classname;
 		      alarm.when = _self.convertFromUTC(new Date(fromPlugin.when));
+		      alarm.wakescreen = fromPlugin.wakescreen;
 		      
 		      return alarm;
 		   };

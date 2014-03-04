@@ -40,6 +40,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 				
 				PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 				PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+				
 				//Acquire the lock
 				wl.acquire();
 
@@ -52,7 +53,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 					//	Log.d(TAG, alarm.getClassName() + " already running");
 					//} else {
 						Log.d(TAG, alarm.getClassName() + " starting");
-						AppHelper.startActivity(context, alarm.getClassName());
+						AppHelper.startActivity(context, alarm.getClassName(), ActivityHelper.createExtras(alarm));
 					//}
 				}
 				

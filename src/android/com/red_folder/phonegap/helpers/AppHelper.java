@@ -6,6 +6,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 public class AppHelper {
@@ -35,7 +36,7 @@ public class AppHelper {
 	    return isServiceFound; 
 	 }
 	
-	public static boolean startActivity(Context context, String className) {
+	public static boolean startActivity(Context context, String className, Bundle extras) {
 		boolean result = false;
 		
 		Log.d(TAG, "Attempting to start " + className);
@@ -43,6 +44,9 @@ public class AppHelper {
 			Intent intent = new Intent();
 			intent.setClassName(context, className);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			
+			intent.putExtras(extras);
+			
 			context.startActivity(intent);
 			
 			Log.d(TAG, "Activity started");

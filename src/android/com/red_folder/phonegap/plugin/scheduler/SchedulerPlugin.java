@@ -79,20 +79,23 @@ public class SchedulerPlugin  extends CordovaPlugin {
 						PluginResult pluginResult = null;
 						if (ACTION_ADD_ALARM.equals(action)) {
 							try {
-								if (data.length() == 2) {
-									Log.d(TAG, "Received, what = " + data.getString(0) + ", when = " + data.getString(1));
+								if (data.length() == 3) {
+									Log.d(TAG, "Received, what = " + data.getString(0) + ", " + 
+								                         "when = " + data.getString(1) + "," +
+								                         "wakescreen = " + data.getBoolean(2));
 
 									String what = data.getString(0);
 									String whenTxt = data.getString(1);
+									boolean wakeScreen = data.getBoolean(2);
 
 									Log.d(TAG, "Attempting to parse");
 									DateFormat m_ISO8601Compliant = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 									Date when = m_ISO8601Compliant.parse(whenTxt);
 
 									Log.d(TAG, "Run set alarm");
-									pluginResult = addAlarm(context, what, when);
+									pluginResult = addAlarm(context, what, when, wakeScreen);
 								} else {
-									pluginResult = new PluginResult(Status.ERROR, "Expected 2 paramaters (what & when), only received " + data.length());
+									pluginResult = new PluginResult(Status.ERROR, "Expected 3 paramaters (what, when, wakeScreen), only received " + data.length());
 								}
 								
 							} catch (JSONException ex) {
@@ -121,21 +124,25 @@ public class SchedulerPlugin  extends CordovaPlugin {
 
 						if (ACTION_UPDATE_ALARM.equals(action)) {
 							try {
-								if (data.length() == 3) {
-									Log.d(TAG, "Received, id = " + data.getInt(0) + ", what = " + data.getString(1) + ", when = " + data.getString(2));
+								if (data.length() == 4) {
+									Log.d(TAG, "Received id = " + data.getInt(0) + ", " +
+											            "what = " + data.getString(1) + ", " + 
+					                                    "when = " + data.getString(2) + "," +
+					                                    "wakescreen = " + data.getBoolean(3));
 
 									int id = data.getInt(0);
 									String what = data.getString(1);
 									String whenTxt = data.getString(2);
+									Boolean wakeScreen = data.getBoolean(3);
 
 									Log.d(TAG, "Attempting to parse");
 									DateFormat m_ISO8601Compliant = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 									Date when = m_ISO8601Compliant.parse(whenTxt);
 
 									Log.d(TAG, "Run update alarm");
-									pluginResult = updateAlarm(context, id, what, when);
+									pluginResult = updateAlarm(context, id, what, when, wakeScreen);
 								} else {
-									pluginResult = new PluginResult(Status.ERROR, "Expected 3 paramaters (id, what & when), only received " + data.length());
+									pluginResult = new PluginResult(Status.ERROR, "Expected 4 paramaters (id, what, when & wakeScreen), only received " + data.length());
 								}
 								
 							} catch (JSONException ex) {
@@ -174,13 +181,14 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		return result;
 	}
 	
-	private PluginResult addAlarm(Context context, String what, Date when){
+	private PluginResult addAlarm(Context context, String what, Date when, boolean wakeScreen){
 		PluginResult result = null;
 
 		// Create an alarm record
 		Alarm alarm = new Alarm();
 		alarm.setClassName(what);
 		alarm.setWhen(when);
+		alarm.setWakeScreen(wakeScreen);
 
 		// Now save the alarm
 		SchedulerDAL dal = new SchedulerDAL(context);
@@ -228,7 +236,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		return result;
     }
 
-	private PluginResult updateAlarm(Context context, int id, String what, Date when)
+	private PluginResult updateAlarm(Context context, int id, String what, Date when, boolean wakeScreen)
     {
 		PluginResult result = null;
 
@@ -236,6 +244,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		alarm.setId(id);
 		alarm.setClassName(what);
 		alarm.setWhen(when);
+		alarm.setWakeScreen(wakeScreen);
 
 		SchedulerDAL dal = new SchedulerDAL(context);
 		dal.update(alarm);

@@ -16,6 +16,7 @@ public class Alarm {
 	private int mId = -1;
 	private String mClassName = null;
 	private Date mWhen = null;
+	private boolean mWakeScreen = true;
 	
 	public int getId() {
 		return this.mId;
@@ -41,12 +42,21 @@ public class Alarm {
 		this.mWhen = when;
 	}
 	
+	public boolean getWakeScreen() {
+		return this.mWakeScreen;
+	}
+	
+	public void setWakeScreen(boolean wakeScreen) {
+		this.mWakeScreen = wakeScreen;
+	}
+	
 	public JSONObject toJSON() {
 		JSONObject result = new JSONObject();
 		
 		try { result.put("id", this.getId()); } catch (JSONException ex) { Log.d(TAG, "Adding Id to JSONObject failed", ex); }
 		try { result.put("classname", this.getClassName()); } catch (JSONException ex) { Log.d(TAG, "Adding ClassName to JSONObject failed", ex); }
 		try { result.put("when", Conversion.convertDateToJavaScriptDate(this.getWhen())); } catch (JSONException ex) { Log.d(TAG, "Adding When to JSONObject failed", ex); }
+		try { result.put("wakescreen", this.getWakeScreen()); } catch (JSONException ex) { Log.d(TAG, "Adding WakeScreen to JSONObject failed", ex); }
 		
 		return result;
 	}
@@ -66,6 +76,9 @@ public class Alarm {
 				result.setWhen(tmpDate);
 		}
 		
+		if (data.has("wakescreen"))
+			result.setWakeScreen(data.optBoolean("wakescreen", true));
+
 		return result;
 	}
 }
