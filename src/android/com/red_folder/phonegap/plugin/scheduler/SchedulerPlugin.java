@@ -274,8 +274,18 @@ public class SchedulerPlugin  extends CordovaPlugin {
 	
 		PendingIntent pi = PendingIntent.getBroadcast(context, alarm.getId(), intent, 0);
 		
-		am.set(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
-		//am.setExact(AlarmManager.RTC_WAKEUP, when.getTime(), pi); //to be used mandatory from Android 19
+			//Since, from API level 19, set is not any longer fixed in time but is approximate and decided by Android, we use setExact for >=19 (kitkat)
+			int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+			Log.d(TAG, " --------- API LEVEL:" +  currentapiVersion);
+			if (currentapiVersion >= 19){
+			    // Do something for Kitkat and above versions
+			    am.setExact(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
+			    Log.d(TAG, " --------- setExact");
+			} else{
+			    // do something for phones running an SDK before Kitkat		    
+			    am.set(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
+			    Log.d(TAG, " --------- set");
+			}
 
 	}
 	
