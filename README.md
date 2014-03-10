@@ -17,6 +17,8 @@ You should be able to run the example.
 
 Further documentation can be found at https://github.com/Red-Folder/Scheduler-Plugin/wiki
 
+JavaScript reference can be found at https://github.com/Red-Folder/Scheduler-Plugin/wiki/Javascript-Method-Reference
+
 ## Development
 This is a very early version of the plugin and is under active development.
 
