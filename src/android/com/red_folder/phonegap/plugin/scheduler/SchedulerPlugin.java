@@ -15,6 +15,7 @@ import org.json.JSONException;
 import com.red_folder.phonegap.helpers.Log;
 import com.red_folder.phonegap.plugin.scheduler.dal.SchedulerDAL;
 import com.red_folder.phonegap.plugin.scheduler.models.Alarm;
+import com.red_folder.phonegap.plugin.scheduler.models.ShowOption;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -82,20 +83,20 @@ public class SchedulerPlugin  extends CordovaPlugin {
 								if (data.length() == 3) {
 									Log.d(TAG, "Received, what = " + data.getString(0) + ", " + 
 								                         "when = " + data.getString(1) + "," +
-								                         "wakescreen = " + data.getBoolean(2));
+					                                     "showOption = " + data.getString(2));
 
 									String what = data.getString(0);
 									String whenTxt = data.getString(1);
-									boolean wakeScreen = data.getBoolean(2);
+									ShowOption showOption = ShowOption.parse(data.getString(2));
 
 									Log.d(TAG, "Attempting to parse");
 									DateFormat m_ISO8601Compliant = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 									Date when = m_ISO8601Compliant.parse(whenTxt);
 
 									Log.d(TAG, "Run set alarm");
-									pluginResult = addAlarm(context, what, when, wakeScreen);
+									pluginResult = addAlarm(context, what, when, showOption);
 								} else {
-									pluginResult = new PluginResult(Status.ERROR, "Expected 3 paramaters (what, when, wakeScreen), only received " + data.length());
+									pluginResult = new PluginResult(Status.ERROR, "Expected 3 paramaters (what, when, showOption), only received " + data.length());
 								}
 								
 							} catch (JSONException ex) {
@@ -128,21 +129,21 @@ public class SchedulerPlugin  extends CordovaPlugin {
 									Log.d(TAG, "Received id = " + data.getInt(0) + ", " +
 											            "what = " + data.getString(1) + ", " + 
 					                                    "when = " + data.getString(2) + "," +
-					                                    "wakescreen = " + data.getBoolean(3));
+					                                    "showOption = " + data.getString(3));
 
 									int id = data.getInt(0);
 									String what = data.getString(1);
 									String whenTxt = data.getString(2);
-									Boolean wakeScreen = data.getBoolean(3);
+									ShowOption showOption = ShowOption.parse(data.getString(3));
 
 									Log.d(TAG, "Attempting to parse");
 									DateFormat m_ISO8601Compliant = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 									Date when = m_ISO8601Compliant.parse(whenTxt);
 
 									Log.d(TAG, "Run update alarm");
-									pluginResult = updateAlarm(context, id, what, when, wakeScreen);
+									pluginResult = updateAlarm(context, id, what, when, showOption);
 								} else {
-									pluginResult = new PluginResult(Status.ERROR, "Expected 4 paramaters (id, what, when & wakeScreen), only received " + data.length());
+									pluginResult = new PluginResult(Status.ERROR, "Expected 4 paramaters (id, what, when & showOption), only received " + data.length());
 								}
 								
 							} catch (JSONException ex) {
@@ -181,14 +182,14 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		return result;
 	}
 	
-	private PluginResult addAlarm(Context context, String what, Date when, boolean wakeScreen){
+	private PluginResult addAlarm(Context context, String what, Date when, ShowOption showOption){
 		PluginResult result = null;
 
 		// Create an alarm record
 		Alarm alarm = new Alarm();
 		alarm.setClassName(what);
 		alarm.setWhen(when);
-		alarm.setWakeScreen(wakeScreen);
+		alarm.setShowOption(showOption);
 
 		// Now save the alarm
 		SchedulerDAL dal = new SchedulerDAL(context);
@@ -236,7 +237,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		return result;
     }
 
-	private PluginResult updateAlarm(Context context, int id, String what, Date when, boolean wakeScreen)
+	private PluginResult updateAlarm(Context context, int id, String what, Date when, ShowOption showOption)
     {
 		PluginResult result = null;
 
@@ -244,7 +245,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		alarm.setId(id);
 		alarm.setClassName(what);
 		alarm.setWhen(when);
-		alarm.setWakeScreen(wakeScreen);
+		alarm.setShowOption(showOption);
 
 		SchedulerDAL dal = new SchedulerDAL(context);
 		dal.update(alarm);
@@ -274,19 +275,18 @@ public class SchedulerPlugin  extends CordovaPlugin {
 	
 		PendingIntent pi = PendingIntent.getBroadcast(context, alarm.getId(), intent, 0);
 		
-			//Since, from API level 19, set is not any longer fixed in time but is approximate and decided by Android, we use setExact for >=19 (kitkat)
-			int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-			Log.d(TAG, " --------- API LEVEL:" +  currentapiVersion);
-			if (currentapiVersion >= 19){
-			    // Do something for Kitkat and above versions
-			    am.setExact(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
-			    Log.d(TAG, " --------- setExact");
-			} else{
-			    // do something for phones running an SDK before Kitkat		    
-			    am.set(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
-			    Log.d(TAG, " --------- set");
-			}
-
+		//Since, from API level 19, set is not any longer fixed in time but is approximate and decided by Android, we use setExact for >=19 (kitkat)
+		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		Log.d(TAG, " --------- API LEVEL:" +  currentapiVersion);
+		if (currentapiVersion >= 19){
+		    // Do something for Kitkat and above versions
+		    am.setExact(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
+		    Log.d(TAG, " --------- setExact");
+		} else{
+		    // do something for phones running an SDK before Kitkat		    
+		    am.set(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
+		    Log.d(TAG, " --------- set");
+		}
 	}
 	
 	private void cancelFromAlarmManager(Context context, Alarm alarm) {
