@@ -4,13 +4,17 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.PluginResult.Status;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.red_folder.phonegap.helpers.Log;
 import com.red_folder.phonegap.plugin.scheduler.dal.SchedulerDAL;
@@ -21,6 +25,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 public class SchedulerPlugin  extends CordovaPlugin {
 
@@ -42,6 +47,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 	public static final String ACTION_UPDATE_ALARM = "updateAlarm";
 	public static final String ACTION_CANCEL_ALARM = "cancelAlarm";
 	public static final String ACTION_GET_DEFAULT_CLASS = "getDefaultClass";
+	public static final String ACTION_GET_ACTIVITY_EXTRAS = "getActivityExtras";
 
 	/*
 	 ************************************************************************************************
@@ -69,7 +75,8 @@ public class SchedulerPlugin  extends CordovaPlugin {
 				ACTION_GET_ALARMS.equals(action) ||
 				ACTION_CANCEL_ALARM.equals(action) ||
 				ACTION_UPDATE_ALARM.equals(action) ||
-				ACTION_GET_DEFAULT_CLASS.equals(action)) { 
+				ACTION_GET_DEFAULT_CLASS.equals(action) ||
+				ACTION_GET_ACTIVITY_EXTRAS.equals(action)) { 
 			
 				Log.d(TAG, "Setting up the runnable thread");
 				
@@ -78,25 +85,28 @@ public class SchedulerPlugin  extends CordovaPlugin {
 					@Override
 					public void run() {
 						PluginResult pluginResult = null;
+						
 						if (ACTION_ADD_ALARM.equals(action)) {
 							try {
-								if (data.length() == 3) {
+								if (data.length() == 4) {
 									Log.d(TAG, "Received, what = " + data.getString(0) + ", " + 
-								                         "when = " + data.getString(1) + "," +
-					                                     "showOption = " + data.getString(2));
+								                         "when = " + data.getString(1) + ", " +
+					                                     "showOption = " + data.getString(2) + ", " +
+								                         "extras = " + data.getJSONObject(3).toString());
 
 									String what = data.getString(0);
 									String whenTxt = data.getString(1);
 									ShowOption showOption = ShowOption.parse(data.getString(2));
+									JSONObject extras = data.getJSONObject(3);
 
 									Log.d(TAG, "Attempting to parse");
 									DateFormat m_ISO8601Compliant = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 									Date when = m_ISO8601Compliant.parse(whenTxt);
 
 									Log.d(TAG, "Run set alarm");
-									pluginResult = addAlarm(context, what, when, showOption);
+									pluginResult = addAlarm(context, what, when, showOption, extras);
 								} else {
-									pluginResult = new PluginResult(Status.ERROR, "Expected 3 paramaters (what, when, showOption), only received " + data.length());
+									pluginResult = new PluginResult(Status.ERROR, "Expected 4 paramaters (what, when, showOption, extras), only received " + data.length());
 								}
 								
 							} catch (JSONException ex) {
@@ -125,25 +135,27 @@ public class SchedulerPlugin  extends CordovaPlugin {
 
 						if (ACTION_UPDATE_ALARM.equals(action)) {
 							try {
-								if (data.length() == 4) {
+								if (data.length() == 5) {
 									Log.d(TAG, "Received id = " + data.getInt(0) + ", " +
 											            "what = " + data.getString(1) + ", " + 
 					                                    "when = " + data.getString(2) + "," +
-					                                    "showOption = " + data.getString(3));
+					                                    "showOption = " + data.getString(3) + ", " +
+										                "extras = " + data.getJSONObject(4).toString());
 
 									int id = data.getInt(0);
 									String what = data.getString(1);
 									String whenTxt = data.getString(2);
 									ShowOption showOption = ShowOption.parse(data.getString(3));
+									JSONObject extras = data.getJSONObject(4);
 
 									Log.d(TAG, "Attempting to parse");
 									DateFormat m_ISO8601Compliant = new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 									Date when = m_ISO8601Compliant.parse(whenTxt);
 
 									Log.d(TAG, "Run update alarm");
-									pluginResult = updateAlarm(context, id, what, when, showOption);
+									pluginResult = updateAlarm(context, id, what, when, showOption, extras);
 								} else {
-									pluginResult = new PluginResult(Status.ERROR, "Expected 4 paramaters (id, what, when & showOption), only received " + data.length());
+									pluginResult = new PluginResult(Status.ERROR, "Expected 5 paramaters (id, what, when, showOption, extras), only received " + data.length());
 								}
 								
 							} catch (JSONException ex) {
@@ -155,6 +167,9 @@ public class SchedulerPlugin  extends CordovaPlugin {
 
 						if (ACTION_GET_DEFAULT_CLASS.equals(action))
 							pluginResult = getDefaultClass(context);
+						
+						if (ACTION_GET_ACTIVITY_EXTRAS.equals(action))
+							pluginResult = getActivityExtras(context);
 						
 						if (pluginResult == null) {
 							Log.d(TAG, "No pluginResult generated, assume unknown action");
@@ -182,7 +197,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		return result;
 	}
 	
-	private PluginResult addAlarm(Context context, String what, Date when, ShowOption showOption){
+	private PluginResult addAlarm(Context context, String what, Date when, ShowOption showOption, JSONObject extras){
 		PluginResult result = null;
 
 		// Create an alarm record
@@ -190,6 +205,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		alarm.setClassName(what);
 		alarm.setWhen(when);
 		alarm.setShowOption(showOption);
+		alarm.setExtras(extras);
 
 		// Now save the alarm
 		SchedulerDAL dal = new SchedulerDAL(context);
@@ -237,7 +253,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		return result;
     }
 
-	private PluginResult updateAlarm(Context context, int id, String what, Date when, ShowOption showOption)
+	private PluginResult updateAlarm(Context context, int id, String what, Date when, ShowOption showOption, JSONObject extras)
     {
 		PluginResult result = null;
 
@@ -246,6 +262,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		alarm.setClassName(what);
 		alarm.setWhen(when);
 		alarm.setShowOption(showOption);
+		alarm.setExtras(extras);
 
 		SchedulerDAL dal = new SchedulerDAL(context);
 		dal.update(alarm);
@@ -267,12 +284,38 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		return result;
 	}
 
+	private PluginResult getActivityExtras(Context context) {
+		PluginResult result = null;
+		JSONObject data = new JSONObject();
+		
+		try {
+			CordovaActivity activity = (CordovaActivity)context;
+			Bundle extras = activity.getIntent().getExtras();
+			
+			if (extras != null) {
+				Set<String> keys = extras.keySet();
+				Iterator<String> it = keys.iterator();
+				while (it.hasNext()) {
+					String key = it.next();
+					Object value = extras.get(key);
+					data.put(key, value);
+				}
+			}
+		} catch (Exception ex) {
+			Log.d(TAG, "Error while trying to get extra data", ex);
+		}
+		
+		result = new PluginResult(Status.OK, data);
+		
+		return result;
+	}
+
 	private void addToAlarmManager(Context context, Alarm alarm) {
 		AlarmManager am=(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         
 		Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
 		intent.putExtra("id", alarm.getId());
-	
+		
 		PendingIntent pi = PendingIntent.getBroadcast(context, alarm.getId(), intent, 0);
 		
 		//Since, from API level 19, set is not any longer fixed in time but is approximate and decided by Android, we use setExact for >=19 (kitkat)

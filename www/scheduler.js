@@ -25,20 +25,20 @@
 		var Scheduler = function () {
 		   var _self = this;
 		   
-		   this.addAlarm = function(what, when, showOption, successCallback, failureCallback) {
+		   this.addAlarm = function(what, when, showOption, extras, successCallback, failureCallback) {
 			  return exec(	successCallback,
 							failureCallback,      
 							'SchedulerPlugin', 
 							'addAlarm',      
-							[what, _self.convertToUTC(when), showOption]);
+							[what, _self.convertToUTC(when), showOption, extras]);
 		   };
 		   
-		   this.updateAlarm = function(id, what, when, showOption, successCallback, failureCallback) {
+		   this.updateAlarm = function(id, what, when, showOption, extras, successCallback, failureCallback) {
 			  return exec(	successCallback,
 							failureCallback,      
 							'SchedulerPlugin', 
 							'updateAlarm',      
-							[id, what, _self.convertToUTC(when), showOption]);
+							[id, what, _self.convertToUTC(when), showOption, extras]);
 		   };
 		   
 		   this.cancelAlarm = function(id, successCallback, failureCallback) {
@@ -81,6 +81,15 @@
 							'getDefaultClass',      
 							[]);
 		   };
+		   
+		   this.getActivityExtras = function(successCallback, failureCallback) {
+			  return exec(	successCallback,
+							failureCallback,      
+							'SchedulerPlugin', 
+							'getActivityExtras',      
+							[]);
+		   };
+		   
 		
 		   this.convertToUTC = function(originalDate) {
 			  return new Date(originalDate.getTime() - _self.getUTCDelta());
@@ -102,6 +111,7 @@
 		      alarm.classname = fromPlugin.classname;
 		      alarm.when = _self.convertFromUTC(new Date(fromPlugin.when));
 		      alarm.showoption = fromPlugin.showoption;
+		      alarm.extras = fromPlugin.extras;
 		      
 		      return alarm;
 		   };

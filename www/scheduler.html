@@ -23,7 +23,14 @@
         <title>Scheduler</title>
     </head>
     <body>
-    	<div id="alarmList"></div>
+    	<div id="alarm" style="display:none;">
+    		<h2>I'm an alarm</h2>
+    		<h3>Get on with what you should be doing</h3>
+    		<input id="closeBtn" type="button" value="Close"/>
+    	</div>
+    	
+    	<div id="alarmList" style="display:none;">
+    	</div>
     	
     	<div id="editAlarm" style="display:none;" >
 			<table>
@@ -210,11 +217,18 @@
 						</select>
 					</td>
 				</tr>
+
+				<tr>
+					<th colspan=1 align="center">Show Alarm Screen</th>
+					<td clospan=2 align="center">
+						<input id="showAlarmChk" type="checkbox"/>
+					</td>
+				</tr>
 	
 			</table>
 		</div>
 
-    	<div id="commands">
+    	<div id="commands" style="display:none;">
     		<input id="addBtn" type="button" value="Add" style="display:inline;"/>
     		<input id="updateBtn" type="button" value="Update" style="display:none;"/>
     		<input id="cancelEditBtn" type="button" value="Cancel" style="display:none;"/>
@@ -232,15 +246,27 @@
    				
       			scheduler = cordova.plugins.scheduler;
 
-				scheduler.getAlarms(function(data) { updateAlarmList(data) },
-									function(data) { displayError(data) }); 
-
-				document.getElementById("addBtn").onclick = add;
-				document.getElementById("updateBtn").onclick = update;
-				document.getElementById("cancelEditBtn").onclick = closeEdit;
-
+				scheduler.getActivityExtras(function(data) { handleExtras(data); },
+				      						function(data) { displayError(data); });
    			}, true);
-   			  
+   		
+   			function handleExtras(data) {
+   				if (data != null && typeof data.showAlarmScreen != 'undefined' && data.showAlarmScreen) {
+   					document.getElementById("alarm").style.display = "block";
+   					document.getElementById("closeBtn").onclick = navigator.app.exitApp;
+   				} else {
+   					document.getElementById("alarmList").style.display = "block";
+   					document.getElementById("commands").style.display = "block";
+					document.getElementById("addBtn").onclick = add;
+					document.getElementById("updateBtn").onclick = update;
+					document.getElementById("cancelEditBtn").onclick = closeEdit;
+
+					scheduler.getAlarms(function(data) { updateAlarmList(data) },
+										function(data) { displayError(data) }); 
+
+   				}
+   			};
+   				  
    			function update() {
    			    document.getElementById("validationError").innerHTML = "";
    			    
@@ -256,13 +282,18 @@
    									0,
    									0);
    									
-                   showOption = document.getElementById("showOptionTxt").value;   									
+                   showOption = document.getElementById("showOptionTxt").value;
+                   
+                   extras = {
+                   				showAlarmScreen: document.getElementById("showAlarmChk").checked
+                   			};   									
 
 					if (id.length > 0) {
    					   scheduler.updateAlarm(	id,
    					   							classname,
    										    	when,
    										    	showOption,
+   										    	extras,
    										    	function(data) {
    											    	scheduler.getAlarms(	function(data) { updateAlarmList(data) },
 																		    function(data) { displayError(data) }); 
@@ -272,6 +303,7 @@
    					   scheduler.addAlarm(	classname,
    										    when,
    										    showOption,
+   										    extras,
    										    function(data) {
    											    scheduler.getAlarms(	function(data) { updateAlarmList(data) },
 																	    function(data) { displayError(data) }); 
@@ -287,13 +319,21 @@
    			}
 
    			function add() {
-				scheduler.getDefaultClass(	function(data) { showEdit(null, data, new Date(), true) },
+				scheduler.getDefaultClass(	function(data) { showEdit(null, data, new Date(), true, true) },
 											function(data) { displayError(data) }); 
    			}
    			
    			function edit(id) {
 				scheduler.getAlarm( id,
-									function(data) { showEdit(data.id, data.classname, data.when, data.showoption) },
+									function(data) {
+										var showAlarmScreen = false;
+										
+										if (data != null && data.extras != null && typeof data.extras.showAlarmScreen != 'undefined') {
+											showAlarmScreen = data.extras.showAlarmScreen;
+										};
+										 
+										showEdit(data.id, data.classname, data.when, data.showoption, showAlarmScreen); 
+									},
 									function(data) { displayError(data) }); 
    			}
 
@@ -317,7 +357,7 @@
    			/*
 			 * View logic
 			 */
- 			function showEdit(alarmID, alarmClassName, alarmDate, alarmShowOption) {
+ 			function showEdit(alarmID, alarmClassName, alarmDate, alarmShowOption, alarmShowAlarmScreen) {
  			
  				document.getElementById("editAlarm").style.display = "block";
  				document.getElementById("addBtn").style.display = "none";
@@ -335,6 +375,8 @@
 				document.getElementById("minuteTxt").value = alarmDate.getMinutes();
 				
 				document.getElementById("showOptionTxt").value = alarmShowOption;
+				
+				document.getElementById("showAlarmChk").checked = alarmShowAlarmScreen;
    			}
 
    			function closeEdit() {

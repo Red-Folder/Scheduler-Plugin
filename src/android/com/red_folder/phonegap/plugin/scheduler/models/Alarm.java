@@ -17,6 +17,7 @@ public class Alarm {
 	private String mClassName = null;
 	private Date mWhen = null;
 	private ShowOption mShowOption = ShowOption.None;
+	private JSONObject mExtras = new JSONObject();
 	
 	public int getId() {
 		return this.mId;
@@ -50,6 +51,14 @@ public class Alarm {
 		this.mShowOption = showOption;
 	}
 	
+	public JSONObject getExtras() {
+		return this.mExtras;
+	}
+	
+	public void setExtras(JSONObject extras) {
+		this.mExtras = extras;
+	}
+	
 	public JSONObject toJSON() {
 		JSONObject result = new JSONObject();
 		
@@ -57,6 +66,7 @@ public class Alarm {
 		try { result.put("classname", this.getClassName()); } catch (JSONException ex) { Log.d(TAG, "Adding ClassName to JSONObject failed", ex); }
 		try { result.put("when", Conversion.convertDateToJavaScriptDate(this.getWhen())); } catch (JSONException ex) { Log.d(TAG, "Adding When to JSONObject failed", ex); }
 		try { result.put("showoption", this.getShowOption()); } catch (JSONException ex) { Log.d(TAG, "Adding ShowOption to JSONObject failed", ex); }
+		try { result.put("extras", this.getExtras()); } catch (JSONException ex) { Log.d(TAG, "Adding Extras to JSONObject failed", ex); }
 		
 		return result;
 	}
@@ -78,6 +88,13 @@ public class Alarm {
 		
 		if (data.has("showoption"))
 			result.setShowOption(ShowOption.parse(data.optString("showoption", "")));
+		
+		if (data.has("extras"))
+			try {
+				result.setExtras(new JSONObject(data.optString("extras","{}")));
+			} catch (JSONException ex) {
+				Log.d(TAG, "Error retrieving extras", ex);
+			}
 
 		return result;
 	}
