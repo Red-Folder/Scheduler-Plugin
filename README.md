@@ -1,7 +1,7 @@
 # Scheduler Plugin
 
 ## Quick summary
-Plugin which allows you to schedule an alarm which will start you app.
+Plugin which allows you to schedule an alarm which will start your app.
  
 ## Getting started
 The plugin can be installed using the following commands (this assumes you are familiar with the [Cordova Android Getting Started] (http://docs.phonegap.com/en/3.3.0/guide_platforms_android_index.md.html#Android%20Platform%20Guide)):
