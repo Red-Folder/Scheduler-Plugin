@@ -12,6 +12,12 @@ The plugin can be installed using the following commands (this assumes you are f
 * cordova plugin add https://github.com/Red-Folder/Scheduler-Plugin.git
 * Amend the hello\www\config.xml, replace any existing content node with: `<content src="scheduler.html" />` (add the content node if not already present)
 * cordova build
+* Add the following to platforms\android\src\com\example\hello\HelloWorld.java in the onCreate() method:
+```
+// You will also need to add - import com.red_folder.phonegap.plugin.scheduler.ActivityHelper; at the top of the java file
+ActivityHelper.onCreate(this);
+```
+* You should then be able to open, build the Android project (platforms\android) within Eclipse
 
 You should be able to run the example.
 
