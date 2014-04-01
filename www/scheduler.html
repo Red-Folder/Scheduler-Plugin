@@ -272,7 +272,7 @@
    			    
    			    try {
    				   id = document.getElementById("idTxt").value;
-   				   classname = document.getElementById("classnameTxt").value;
+   				   what = document.getElementById("classnameTxt").value;
 
    				   when = new Date(	document.getElementById("yearTxt").value,
    					   				document.getElementById("monthTxt").value - 1,
@@ -290,7 +290,7 @@
 
 					if (id.length > 0) {
    					   scheduler.updateAlarm(	id,
-   					   							classname,
+   					   							what,
    										    	when,
    										    	showOption,
    										    	extras,
@@ -300,7 +300,7 @@
 										    	}, 
    										    	function(data) { displayError(data) });
 					} else {
-   					   scheduler.addAlarm(	classname,
+   					   scheduler.addAlarm(	what,
    										    when,
    										    showOption,
    										    extras,
@@ -332,7 +332,7 @@
 											showAlarmScreen = data.extras.showAlarmScreen;
 										};
 										 
-										showEdit(data.id, data.classname, data.when, data.showoption, showAlarmScreen); 
+										showEdit(data.id, data.what, data.when, data.showOption, showAlarmScreen); 
 									},
 									function(data) { displayError(data) }); 
    			}
@@ -357,7 +357,7 @@
    			/*
 			 * View logic
 			 */
- 			function showEdit(alarmID, alarmClassName, alarmDate, alarmShowOption, alarmShowAlarmScreen) {
+ 			function showEdit(alarmID, alarmWhat, alarmWhen, alarmShowOption, alarmShowAlarmScreen) {
  			
  				document.getElementById("editAlarm").style.display = "block";
  				document.getElementById("addBtn").style.display = "none";
@@ -365,14 +365,14 @@
  				document.getElementById("cancelEditBtn").style.display = "inline";
 				
 				document.getElementById("idTxt").value = alarmID;
-				document.getElementById("classnameTxt").value = alarmClassName;
+				document.getElementById("classnameTxt").value = alarmWhat;
 				
-				document.getElementById("dayTxt").value = alarmDate.getDate();
-				document.getElementById("monthTxt").value = alarmDate.getMonth() +1;
-				document.getElementById("yearTxt").value = alarmDate.getFullYear();
+				document.getElementById("dayTxt").value = alarmWhen.getDate();
+				document.getElementById("monthTxt").value = alarmWhen.getMonth() +1;
+				document.getElementById("yearTxt").value = alarmWhen.getFullYear();
 
-				document.getElementById("hourTxt").value = alarmDate.getHours();
-				document.getElementById("minuteTxt").value = alarmDate.getMinutes();
+				document.getElementById("hourTxt").value = alarmWhen.getHours();
+				document.getElementById("minuteTxt").value = alarmWhen.getMinutes();
 				
 				document.getElementById("showOptionTxt").value = alarmShowOption;
 				

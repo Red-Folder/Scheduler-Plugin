@@ -1,5 +1,7 @@
 package com.red_folder.phonegap.plugin.scheduler;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -215,7 +217,7 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		
 			addToAlarmManager(context, alarm);
 		
-			result = new PluginResult(Status.OK);
+			result = new PluginResult(Status.OK, dal.getAsJSON(id));
 		} else {
 			result = new PluginResult(Status.ERROR, "Unable to save Alarm details");
 		}
@@ -267,12 +269,12 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		SchedulerDAL dal = new SchedulerDAL(context);
 		dal.update(alarm);
 		dal.save();
-		dal = null;
 		
 		cancelFromAlarmManager(context, alarm);
 		addToAlarmManager(context, alarm);
 
-		result = new PluginResult(Status.OK);
+		result = new PluginResult(Status.OK, dal.getAsJSON(id));
+
 		return result;
     }
 
@@ -320,15 +322,29 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		
 		//Since, from API level 19, set is not any longer fixed in time but is approximate and decided by Android, we use setExact for >=19 (kitkat)
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		boolean done = false;
 		Log.d(TAG, " --------- API LEVEL:" +  currentapiVersion);
 		if (currentapiVersion >= 19){
-		    // Do something for Kitkat and above versions
-		    am.setExact(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
-		    Log.d(TAG, " --------- setExact");
-		} else{
-		    // do something for phones running an SDK before Kitkat		    
+		    Log.d(TAG, "Using setExact()");
+
+		    try {
+				Method setExactMethod = AlarmManager.class.getMethod( "setExact", new Class[] { Integer.TYPE, Long.TYPE, PendingIntent.class } );
+				if (setExactMethod == null ) {
+					Log.d(TAG, "Unable to find setExact method");
+				} else {
+					setExactMethod.invoke(am, new Object[] { AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi } );
+					
+					done = true;
+				}
+			} catch (Exception ex) {
+				Log.d(TAG, "Error occurred while trying to use setExact via reflection", ex);
+			}
+		} 
+		
+		if (!done) {
+		    Log.d(TAG, "Using set()");
+		    // do something for phones running an SDK before Kitkat or if the above fails		    
 		    am.set(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
-		    Log.d(TAG, " --------- set");
 		}
 	}
 	

@@ -26,7 +26,9 @@
 		   var _self = this;
 		   
 		   this.addAlarm = function(what, when, showOption, extras, successCallback, failureCallback) {
-			  return exec(	successCallback,
+			  return exec(	function(data) {	
+			  					successCallback(_self.convertToJSON(data));
+			  				},
 							failureCallback,      
 							'SchedulerPlugin', 
 							'addAlarm',      
@@ -34,7 +36,9 @@
 		   };
 		   
 		   this.updateAlarm = function(id, what, when, showOption, extras, successCallback, failureCallback) {
-			  return exec(	successCallback,
+			  return exec(	function(data) {	
+			  					successCallback(_self.convertToJSON(data));
+			  				},
 							failureCallback,      
 							'SchedulerPlugin', 
 							'updateAlarm',      
@@ -108,9 +112,9 @@
 		      var alarm = {};
 		      
 		      alarm.id = fromPlugin.id;
-		      alarm.classname = fromPlugin.classname;
+		      alarm.what = fromPlugin.what;
 		      alarm.when = _self.convertFromUTC(new Date(fromPlugin.when));
-		      alarm.showoption = fromPlugin.showoption;
+		      alarm.showOption = fromPlugin.showOption;
 		      alarm.extras = fromPlugin.extras;
 		      
 		      return alarm;

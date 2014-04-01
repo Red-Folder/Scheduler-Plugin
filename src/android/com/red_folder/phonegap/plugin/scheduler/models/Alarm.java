@@ -63,9 +63,9 @@ public class Alarm {
 		JSONObject result = new JSONObject();
 		
 		try { result.put("id", this.getId()); } catch (JSONException ex) { Log.d(TAG, "Adding Id to JSONObject failed", ex); }
-		try { result.put("classname", this.getClassName()); } catch (JSONException ex) { Log.d(TAG, "Adding ClassName to JSONObject failed", ex); }
+		try { result.put("what", this.getClassName()); } catch (JSONException ex) { Log.d(TAG, "Adding What to JSONObject failed", ex); }
 		try { result.put("when", Conversion.convertDateToJavaScriptDate(this.getWhen())); } catch (JSONException ex) { Log.d(TAG, "Adding When to JSONObject failed", ex); }
-		try { result.put("showoption", this.getShowOption()); } catch (JSONException ex) { Log.d(TAG, "Adding ShowOption to JSONObject failed", ex); }
+		try { result.put("showOption", this.getShowOption()); } catch (JSONException ex) { Log.d(TAG, "Adding ShowOption to JSONObject failed", ex); }
 		try { result.put("extras", this.getExtras()); } catch (JSONException ex) { Log.d(TAG, "Adding Extras to JSONObject failed", ex); }
 		
 		return result;
@@ -77,8 +77,8 @@ public class Alarm {
 		if (data.has("id"))
 			result.setId(data.optInt("id", -1));
 		
-		if (data.has("classname"))
-			result.setClassName(data.optString("classname", null));
+		if (data.has("what"))
+			result.setClassName(data.optString("what", null));
 		
 		if (data.has("when")) {
 			Date tmpDate = Conversion.convertJavaScriptDateToDate(data.optString("when", ""));
@@ -86,8 +86,8 @@ public class Alarm {
 				result.setWhen(tmpDate);
 		}
 		
-		if (data.has("showoption"))
-			result.setShowOption(ShowOption.parse(data.optString("showoption", "")));
+		if (data.has("showOption"))
+			result.setShowOption(ShowOption.parse(data.optString("showOption", "")));
 		
 		if (data.has("extras"))
 			try {
