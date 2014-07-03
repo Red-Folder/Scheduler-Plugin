@@ -19,22 +19,22 @@
     <!-- android -->
     <platform name="android">
 
-		<asset src="www/scheduler.html" target="scheduler.html" />
+	<asset src="www/scheduler.html" target="scheduler.html" />
 
-		<js-module src="www/scheduler.js" name="scheduler">
-			<clobbers target="cordova.plugins.scheduler" />
-		</js-module>
+	<js-module src="www/scheduler.js" name="SchedulerPlugin">
+		<clobbers target="cordova.plugins.scheduler" />
+	</js-module>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
-			<receiver android:name="com.red_folder.phonegap.plugin.scheduler.AlarmBroadcastReceiver">
-			</receiver>
+		<receiver android:name="com.red_folder.phonegap.plugin.scheduler.AlarmBroadcastReceiver">
+		</receiver>
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
-			<uses-permission android:name='android.permission.WAKE_LOCK'/>
+		<uses-permission android:name='android.permission.WAKE_LOCK'/>
         </config-file>
         
-		 <config-file target="res/xml/config.xml" parent="/*">
+	<config-file target="res/xml/config.xml" parent="/*">
             <feature name="SchedulerPlugin">
                 <param name="android-package" value="com.red_folder.phonegap.plugin.scheduler.SchedulerPlugin"/>
             </feature>
