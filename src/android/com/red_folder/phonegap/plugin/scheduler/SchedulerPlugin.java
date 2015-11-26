@@ -275,17 +275,22 @@ public class SchedulerPlugin  extends CordovaPlugin {
 		PendingIntent pi = PendingIntent.getBroadcast(context, alarm.getId(), intent, 0);
 		
 			//Since, from API level 19, set is not any longer fixed in time but is approximate and decided by Android, we use setExact for >=19 (kitkat)
+			//Since API level 21 (Lollipop) it seems on Samsung only setAlarmClock respects the minute
+			//http://stackoverflow.com/questions/33260851/alarmmanager-not-working-as-expected-in-sleep-mode-on-s5-neo
 			int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 			Log.d(TAG, " --------- API LEVEL:" +  currentapiVersion);
-			if (currentapiVersion >= 19){
-			    // Do something for Kitkat and above versions
-			    am.setExact(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
-			    Log.d(TAG, " --------- setExact");
-			} else{
-			    // do something for phones running an SDK before Kitkat		    
-			    am.set(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
+			
+	                if (currentapiVersion >= 21) { //Lollipop
+	                    AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(alarm.getWhen().getTime(), pi);
+                            am.setAlarmClock(alarmClockInfo, pi);
+                            Log.d(TAG, " --------- setAlarmClock");
+	                } else if (currentapiVersion >= 19) { //KitKat
+	                        am.setExact(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
+	                        Log.d(TAG, " --------- setExact");
+	                } else { //Lower than Kitkat
+	                    am.set(AlarmManager.RTC_WAKEUP, alarm.getWhen().getTime(), pi);
 			    Log.d(TAG, " --------- set");
-			}
+	                }
 
 	}
 	
